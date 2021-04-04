@@ -53,12 +53,19 @@ const Dao = () => {
   const [showError, setShowError] = useState(null);
   const [addProposalModal, setAddProposalModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [showCouncilChange, setShowCouncilChange] = useState(false);
   
   const [showAddMemberToRole, setShowAddMemberToRole] = useState(true);
   const [showChangeConfig, setShowChangeConfig] = useState(false);
+  const [showChangePolicy, setShowChangePolicy] = useState(false);
+  const [showRemoveMemberFromRole, setShowRemoveMemberFromRole] = useState(false);
+  const [showChangeConfhowFunctionCallig, setShowFunctionCall] = useState(false);
+  const [showUpgradeSelf, setShowUpgradeSelf] = useState(false);
+  const [showUpgradeRemote, setShowUpgradeRemote] = useState(false);
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [showSetStakingContract, setShowSetStakingContract] = useState(false);
+  const [showVote, setShowVote] = useState(false);
+
   
-  const [showVotePeriod, setShowVotePeriod] = useState(false);
   const [selectDao, setSelectDao] = useState(false);
   const [showNewProposalNotification, setShowNewProposalNotification] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
@@ -482,10 +489,122 @@ Roles Kinds:
     if (event.target.value === "AddMemberToRole") {
       setShowAddMemberToRole(true);
       setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
     }
     if (event.target.value === "ChangeConfig") {
       setShowAddMemberToRole(false);
       setShowChangeConfig(true);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "ChangePolicy") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(true);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "RemoveMemberFromRole") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(true);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "FunctionCall") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(true);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "UpgradeSelf") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(true);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "UpgradeRemote") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(true);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "Transfer") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(true);
+      setShowSetStakingContract(false);
+      setShowVote(false);
+    }
+    if (event.target.value === "SetStakingContract") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(true);
+      setShowVote(false);
+    }
+    if (event.target.value === "Vote") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(false);
+      setShowChangePolicy(false);
+      setShowRemoveMemberFromRole(false);
+      setShowFunctionCall(false);
+      setShowUpgradeSelf(false);
+      setShowUpgradeRemote(false);
+      setShowTransfer(false);
+      setShowSetStakingContract(false);
+      setShowVote(true);
     }
   };
 
