@@ -1002,6 +1002,51 @@ Roles Kinds:
                       </MDBInput>
                       </>
                     : null}
+                  {showChangeConfig ?
+                      <>
+                        
+                      </>
+                      : null}
+                  {showChangePolicy ?
+                      <>
+
+                      </>
+                      : null}
+                  {showRemoveMemberFromRole ?
+                      <>
+
+                      </>
+                      : null}
+                  {showChangeConfhowFunctionCallig ?
+                      <>
+
+                      </>
+                      : null}
+                  {showUpgradeSelf ?
+                      <>
+
+                      </>
+                      : null}
+                  {showUpgradeRemote ?
+                      <>
+
+                      </>
+                      : null}
+                  {showTransfer ?
+                      <>
+
+                      </>
+                      : null}
+                  {showSetStakingContract ?
+                      <>
+
+                      </>
+                      : null}
+                  {showVote ?
+                      <>
+
+                      </>
+                      : null}
                 </MDBModalBody>
                 <MDBModalFooter className="justify-content-center">
                   <MDBBtn color="unique" type="submit">
