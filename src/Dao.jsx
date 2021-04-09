@@ -98,17 +98,22 @@ const Dao = () => {
     message: "",
   }); 
   
-  
-  const [votePeriod, setVotePeriod] = useState({
+  const [proposalChangeConfigName, setProposalChangeConfigName] = useState({
     value: "",
     valid: true,
     message: "",
   });
-  const [changePurpose, setChangePurpose] = useState({
+  const [proposalChangeConfigPurpose, setProposalChangeConfigPurpose] = useState({
     value: "",
     valid: true,
     message: "",
   });
+  const [proposalChangeConfigMetadata, setProposalChangeConfigMetadata] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+
 
   useEffect(
     () => {
@@ -182,6 +187,10 @@ const Dao = () => {
     let validateProposalMemberRole = validateField("proposalMemberRole", proposalMemberRole.value);
     let validateProposalMemberId = validateField("proposalMemberId", proposalMemberId.value);
 
+    let validateProposalChangeConfigName = validateField("proposalChangeConfigName", proposalChangeConfigName.value);
+    let validateProposalChangeConfigPurpose = validateField("proposalChangeConfigPurpose", proposalChangeConfigPurpose.value);
+    let validateProposalChangeConfigMetadata = validateField("proposalChangeConfigMetadata", proposalChangeConfigMetadata.value);
+
     if (!validateDescription) {
       e.target.proposalDescription.className += " is-invalid";
       e.target.proposalDescription.classList.remove("is-valid");
@@ -237,6 +246,36 @@ const Dao = () => {
           setShowSpinner(false);
         }
     }
+
+    if (showChangeConfig && !!nearAccountValid && validateDescription &&
+        validateProposalChangeConfigName && validateProposalChangeConfigPurpose && validateProposalChangeConfigMetadata) {
+      try {
+        console.log("showAddMemberToRole...")
+        setShowSpinner(true);
+        /*await window.contract.add_proposal({
+            proposal: {
+              description: (e.target.proposalDescription.value).trim(),
+              kind: {
+                ChangeConfig: {
+                  config: {
+                    name: e.target.proposalChangeConfigName,
+                    purpose: e.target.proposalChangeConfigPurpose,
+                    metadata: e.target.proposalChangeConfigMetadata,
+                  }
+                },
+              }
+            },
+          },
+          gas.toString(), amountYokto.toString()
+        )*/
+      } catch (e) {
+        console.log(e);
+        setShowError(e);
+      } finally {
+        setShowSpinner(false);
+      }
+    }
+
   }
 
   const [firstRun, setFirstRun] = useState(true);
@@ -630,6 +669,28 @@ Roles Kinds:
         message: proposalMemberId.message
       });
     }
+
+    if (event.target.name === "proposalChangeConfigName") {
+      setProposalChangeConfigName({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalChangeConfigName.message
+      });
+    }
+    if (event.target.name === "proposalChangeConfigPurpose") {
+      setProposalChangeConfigPurpose({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalChangeConfigPurpose.message
+      });
+    }
+    if (event.target.name === "proposalChangeConfigMetadata") {
+      setProposalChangeConfigMetadata({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalChangeConfigMetadata.message
+      });
+    }
   };
 
   const showMessage = (message, type, field) => {
@@ -1004,7 +1065,26 @@ Roles Kinds:
                     : null}
                   {showChangeConfig ?
                       <>
-                        
+                        <>
+                          <MDBInput value={proposalChangeConfigName.value} name="proposalChangeConfigName" onChange={changeHandler} required
+                                    label="Name" group>
+                            <div className="invalid-feedback">
+                              {proposalChangeConfigName.message}
+                            </div>
+                          </MDBInput>
+                          <MDBInput value={proposalChangeConfigPurpose.value} name="proposalChangeConfigPurpose" onChange={changeHandler} required
+                                    label="Member role" group>
+                            <div className="invalid-feedback">
+                              {proposalChangeConfigPurpose.message}
+                            </div>
+                          </MDBInput>
+                          <MDBInput value={proposalChangeConfigMetadata.value} name="proposalChangeConfigMetadata" onChange={changeHandler} required
+                                    label="Member role" group>
+                            <div className="invalid-feedback">
+                              {proposalChangeConfigMetadata.message}
+                            </div>
+                          </MDBInput>
+                        </>
                       </>
                       : null}
                   {showChangePolicy ?
