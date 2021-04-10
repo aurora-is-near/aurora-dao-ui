@@ -201,8 +201,7 @@ const Dao = () => {
 
     // 30 TGas
     const gas = new Decimal("30000000000000");
-    const a = new Decimal(1);
-    const amountYokto = a.mul(yoktoNear).toFixed();
+    const amountYokto = yoktoNear
     
     if (showAddMemberToRole) {
       if (!validateProposalMemberRole) {
@@ -224,21 +223,19 @@ const Dao = () => {
     if (showAddMemberToRole && !!nearAccountValid && 
         validateDescription && validateProposalMemberRole && validateProposalMemberId) {
         try {
-          console.log("showAddMemberToRole...")
+          console.log("AddMemberToRole...")
           setShowSpinner(true);
-          /*await window.contract.add_proposal({
-              proposal: {
-                description: (e.target.proposalDescription.value).trim(),
-                kind: {
-                  AddMemberToRole: {
-                    member_id: e.target.proposalMemberId,
-                    role: e.target.proposalMemberRole
-                  },
-                }
+          let args = {
+            "proposal": {
+              "AddMemberToRole": {
+                "member_id": e.target.proposalMemberId.value,
+                "role": e.target.proposalMemberRole.value,
               },
-            },
-            gas.toString(), amountYokto.toString()
-          )*/
+            }
+          };
+          //let x = Buffer.from(JSON.stringify(args));
+          //console.log(x);
+          await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
         } catch (e) {
           console.log(e);
           setShowError(e);
@@ -250,23 +247,48 @@ const Dao = () => {
     if (showChangeConfig && !!nearAccountValid && validateDescription &&
         validateProposalChangeConfigName && validateProposalChangeConfigPurpose && validateProposalChangeConfigMetadata) {
       try {
-        console.log("showAddMemberToRole...")
+        console.log("ChangeConfig...")
         setShowSpinner(true);
-        /*await window.contract.add_proposal({
-            proposal: {
-              description: (e.target.proposalDescription.value).trim(),
-              kind: {
-                ChangeConfig: {
-                  config: {
-                    name: e.target.proposalChangeConfigName,
-                    purpose: e.target.proposalChangeConfigPurpose,
-                    metadata: e.target.proposalChangeConfigMetadata,
-                  }
+        await window.contract.add_proposal({
+            "proposal": {
+              "description": (e.target.proposalDescription.value).trim(),
+              "kind": {
+                "ChangeConfig": {
+                  "config": {
+                    "name": e.target.proposalChangeConfigName.value,
+                    "purpose": e.target.proposalChangeConfigPurpose.value,
+                    "metadata": e.target.proposalChangeConfigMetadata.value,
+                  },
                 },
-              }
+              },
             },
           },
           gas.toString(), amountYokto.toString()
+        )
+      } catch (e) {
+        console.log(e);
+        setShowError(e);
+      } finally {
+        setShowSpinner(false);
+      }
+    }
+
+    if (showChangePolicy && !!nearAccountValid && validateDescription) {
+      try {
+        console.log("showChangePolicy...")
+        setShowSpinner(true);
+        // TODO: for Policy it's more complicated rules
+        /*await window.contract.add_proposal({
+              proposal: {
+                description: (e.target.proposalDescription.value).trim(),
+                kind: {
+                  ChangePolicy: {
+                    Default: ['']
+                  },
+                }
+              },
+            },
+            gas.toString(), amountYokto.toString()
         )*/
       } catch (e) {
         console.log(e);
@@ -502,6 +524,9 @@ const Dao = () => {
       case "proposalDescription":
       case "proposalMemberRole":
       case "proposalMemberId":
+      case "proposalChangeConfigName":
+      case "proposalChangeConfigPurpose":
+      case "proposalChangeConfigMetadata":
         return validateString(field, value, showMessage.bind(this));
       case "amount":
         return validateNumber(field, value, showMessage.bind(this));
@@ -1073,13 +1098,13 @@ Roles Kinds:
                             </div>
                           </MDBInput>
                           <MDBInput value={proposalChangeConfigPurpose.value} name="proposalChangeConfigPurpose" onChange={changeHandler} required
-                                    label="Member role" group>
+                                    label="Purpose" group>
                             <div className="invalid-feedback">
                               {proposalChangeConfigPurpose.message}
                             </div>
                           </MDBInput>
                           <MDBInput value={proposalChangeConfigMetadata.value} name="proposalChangeConfigMetadata" onChange={changeHandler} required
-                                    label="Member role" group>
+                                    label="Metadata" group>
                             <div className="invalid-feedback">
                               {proposalChangeConfigMetadata.message}
                             </div>
@@ -1089,7 +1114,7 @@ Roles Kinds:
                       : null}
                   {showChangePolicy ?
                       <>
-
+                        <div>Add Policy rules...</div>
                       </>
                       : null}
                   {showRemoveMemberFromRole ?
