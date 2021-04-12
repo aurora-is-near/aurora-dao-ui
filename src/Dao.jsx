@@ -201,8 +201,8 @@ const Dao = () => {
 
     // 30 TGas
     const gas = new Decimal("30000000000000");
-    const amountYokto = yoktoNear
-    
+    const amountYokto = new Decimal("1");
+
     if (showAddMemberToRole) {
       if (!validateProposalMemberRole) {
         e.target.proposalMemberRole.className += " is-invalid";
@@ -234,8 +234,15 @@ const Dao = () => {
             }
           };
           //let x = Buffer.from(JSON.stringify(args));
-          //console.log(x);
-          await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
+          console.log(args);
+          await window.contract.add_proposal({
+            "proposal": {
+              "AddMemberToRole": {
+                "member_id": e.target.proposalMemberId.value,
+                "role": e.target.proposalMemberRole.value,
+              },
+            }
+          }, gas.toString(), amountYokto.toString());
         } catch (e) {
           console.log(e);
           setShowError(e);
