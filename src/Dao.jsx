@@ -56,15 +56,8 @@ const Dao = () => {
   
   const [showAddMemberToRole, setShowAddMemberToRole] = useState(true);
   const [showChangeConfig, setShowChangeConfig] = useState(false);
-  const [showChangePolicy, setShowChangePolicy] = useState(false);
   const [showRemoveMemberFromRole, setShowRemoveMemberFromRole] = useState(false);
-  const [showChangeConfhowFunctionCallig, setShowFunctionCall] = useState(false);
-  const [showUpgradeSelf, setShowUpgradeSelf] = useState(false);
-  const [showUpgradeRemote, setShowUpgradeRemote] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
-  const [showSetStakingContract, setShowSetStakingContract] = useState(false);
-  const [showVote, setShowVote] = useState(false);
-
   
   const [selectDao, setSelectDao] = useState(false);
   const [showNewProposalNotification, setShowNewProposalNotification] = useState(false);
@@ -272,31 +265,6 @@ const Dao = () => {
           },
           gas.toString(), amountYokto.toString()
         )
-      } catch (e) {
-        console.log(e);
-        setShowError(e);
-      } finally {
-        setShowSpinner(false);
-      }
-    }
-
-    if (showChangePolicy && !!nearAccountValid && validateDescription) {
-      try {
-        console.log("showChangePolicy...")
-        setShowSpinner(true);
-        // TODO: for Policy it's more complicated rules
-        /*await window.contract.add_proposal({
-              proposal: {
-                description: (e.target.proposalDescription.value).trim(),
-                kind: {
-                  ChangePolicy: {
-                    Default: ['']
-                  },
-                }
-              },
-            },
-            gas.toString(), amountYokto.toString()
-        )*/
       } catch (e) {
         console.log(e);
         setShowError(e);
@@ -560,122 +528,26 @@ Roles Kinds:
     if (event.target.value === "AddMemberToRole") {
       setShowAddMemberToRole(true);
       setShowChangeConfig(false);
-      setShowChangePolicy(false);
       setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
       setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
     }
     if (event.target.value === "ChangeConfig") {
       setShowAddMemberToRole(false);
       setShowChangeConfig(true);
-      setShowChangePolicy(false);
       setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
       setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
-    }
-    if (event.target.value === "ChangePolicy") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(true);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
-      setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
     }
     if (event.target.value === "RemoveMemberFromRole") {
       setShowAddMemberToRole(false);
       setShowChangeConfig(false);
-      setShowChangePolicy(false);
       setShowRemoveMemberFromRole(true);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
       setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
-    }
-    if (event.target.value === "FunctionCall") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(false);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(true);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
-      setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
-    }
-    if (event.target.value === "UpgradeSelf") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(false);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(true);
-      setShowUpgradeRemote(false);
-      setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
-    }
-    if (event.target.value === "UpgradeRemote") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(false);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(true);
-      setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(false);
     }
     if (event.target.value === "Transfer") {
       setShowAddMemberToRole(false);
       setShowChangeConfig(false);
-      setShowChangePolicy(false);
       setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
       setShowTransfer(true);
-      setShowSetStakingContract(false);
-      setShowVote(false);
-    }
-    if (event.target.value === "SetStakingContract") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(false);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
-      setShowTransfer(false);
-      setShowSetStakingContract(true);
-      setShowVote(false);
-    }
-    if (event.target.value === "Vote") {
-      setShowAddMemberToRole(false);
-      setShowChangeConfig(false);
-      setShowChangePolicy(false);
-      setShowRemoveMemberFromRole(false);
-      setShowFunctionCall(false);
-      setShowUpgradeSelf(false);
-      setShowUpgradeRemote(false);
-      setShowTransfer(false);
-      setShowSetStakingContract(false);
-      setShowVote(true);
     }
   };
 
@@ -1119,42 +991,23 @@ Roles Kinds:
                         </>
                       </>
                       : null}
-                  {showChangePolicy ?
-                      <>
-                        <div>Add Policy rules...</div>
-                      </>
-                      : null}
                   {showRemoveMemberFromRole ?
                       <>
-
-                      </>
-                      : null}
-                  {showChangeConfhowFunctionCallig ?
-                      <>
-
-                      </>
-                      : null}
-                  {showUpgradeSelf ?
-                      <>
-
-                      </>
-                      : null}
-                  {showUpgradeRemote ?
-                      <>
-
+                        <MDBInput value={proposalRemoveMemberId.value} name="proposalRemoveMemberId" onChange={changeHandler} required
+                                  label="Member ID" group>
+                          <div className="invalid-feedback">
+                            {proposalRemoveMemberId.message}
+                          </div>
+                        </MDBInput>
+                        <MDBInput value={proposalRemoveMemberRole.value} name="proposalRemoveMemberRole" onChange={changeHandler} required
+                                  label="Member role" group>
+                          <div className="invalid-feedback">
+                            {proposalRemoveMemberRole.message}
+                          </div>
+                        </MDBInput>
                       </>
                       : null}
                   {showTransfer ?
-                      <>
-
-                      </>
-                      : null}
-                  {showSetStakingContract ?
-                      <>
-
-                      </>
-                      : null}
-                  {showVote ?
                       <>
 
                       </>
