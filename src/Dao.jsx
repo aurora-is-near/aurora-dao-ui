@@ -107,6 +107,37 @@ const Dao = () => {
     message: "",
   });
 
+  const [proposalRemoveMemberId, setProposalRemoveMemberId] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+  const [proposalRemoveMemberRole, setProposalRemoveMemberRole] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+  const [proposalTransferToken, setProposalTransferToken] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+  const [proposalTransferReceiver, setProposalTransferReceiver] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+  const [proposalTransferAmount, setProposalTransferAmount] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });
+  const [proposalTransferMessage, setProposalTransferMessageProposalChangeConfigMetadata] = useState({
+    value: "",
+    valid: true,
+    message: "",
+  });  
+
 
   useEffect(
     () => {
@@ -1009,7 +1040,30 @@ Roles Kinds:
                       : null}
                   {showTransfer ?
                       <>
-
+                        <MDBInput value={proposalTransferToken.value} name="proposalTransferToken" onChange={changeHandler} required
+                                  label="Token ID" group>
+                          <div className="invalid-feedback">
+                            {proposalTransferToken.message}
+                          </div>
+                        </MDBInput>
+                        <MDBInput value={proposalTransferReceiver.value} name="proposalTransferReceiver" onChange={changeHandler} required
+                                  label="Receiver ID" group>
+                          <div className="invalid-feedback">
+                            {proposalTransferReceiver.message}
+                          </div>
+                        </MDBInput>
+                        <MDBInput value={proposalTransferAmount.value} name="proposalTransferAmount" onChange={changeHandler} required
+                                  label="Amount" group>
+                          <div className="invalid-feedback">
+                            {proposalTransferAmount.message}
+                          </div>
+                        </MDBInput>
+                        <MDBInput value={proposalTransferMessage.value} name="proposalTransferMessage" onChange={changeHandler} required
+                                  label="Message" group>
+                          <div className="invalid-feedback">
+                            {proposalTransferMessage.message}
+                          </div>
+                        </MDBInput>
                       </>
                       : null}
                 </MDBModalBody>
