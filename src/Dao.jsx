@@ -132,7 +132,7 @@ const Dao = () => {
     valid: true,
     message: "",
   });
-  const [proposalTransferMessage, setProposalTransferMessageProposalChangeConfigMetadata] = useState({
+  const [proposalTransferMessage, setProposalTransferMessage] = useState({
     value: "",
     valid: true,
     message: "",
@@ -624,6 +624,49 @@ Roles Kinds:
         value: event.target.value,
         valid: !!event.target.value,
         message: proposalChangeConfigMetadata.message
+      });
+    }
+
+    if (event.target.name === "proposalRemoveMemberId") {
+      setProposalRemoveMemberId({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalRemoveMemberId.message
+      });
+    }
+    if (event.target.name === "proposalRemoveMemberRole") {
+      setProposalRemoveMemberRole({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalRemoveMemberRole.message
+      });
+    }
+    if (event.target.name === "proposalTransferToken") {
+      setProposalTransferToken({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalTransferToken.message
+      });
+    }
+    if (event.target.name === "proposalTransferReceiver") {
+      setProposalTransferReceiver({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalTransferReceiver.message
+      });
+    }
+    if (event.target.name === "proposalTransferAmount") {
+      setProposalTransferAmount({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalTransferAmount.message
+      });
+    }
+    if (event.target.name === "proposalTransferMessage") {
+      setProposalTransferMessage({
+        value: event.target.value,
+        valid: !!event.target.value,
+        message: proposalTransferMessage.message
       });
     }
   };
