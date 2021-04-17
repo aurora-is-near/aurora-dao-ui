@@ -215,6 +215,13 @@ const Dao = () => {
     let validateProposalChangeConfigPurpose = validateField("proposalChangeConfigPurpose", proposalChangeConfigPurpose.value);
     let validateProposalChangeConfigMetadata = validateField("proposalChangeConfigMetadata", proposalChangeConfigMetadata.value);
 
+    let validateProposalRemoveMemberId = validateField("proposalRemoveMemberId", proposalRemoveMemberId.value);
+    let validateProposalRemoveMemberRole = validateField("proposalRemoveMemberRole", proposalRemoveMemberRole.value);
+    let validateProposalTransferToken = validateField("proposalTransferToken", proposalTransferToken.value);
+    let validateProposalTransferReceiver = validateField("proposalTransferReceiver", proposalTransferReceiver.value);
+    let validateProposalTransferAmount = validateNumber("proposalTransferAmount", proposalTransferAmount.value);
+    let validateProposalTransferMessage = validateField("proposalChangeConfigMetadata", proposalTransferMessage.value);    
+
     if (!validateDescription) {
       e.target.proposalDescription.className += " is-invalid";
       e.target.proposalDescription.classList.remove("is-valid");
@@ -252,21 +259,12 @@ const Dao = () => {
           let args = {
             "proposal": {
               "AddMemberToRole": {
-                "member_id": e.target.proposalMemberId.value,
-                "role": e.target.proposalMemberRole.value,
+                "member_id": proposalMemberId,
+                "role": proposalMemberRole,
               },
             }
           };
-          //let x = Buffer.from(JSON.stringify(args));
-          console.log(args);
-          await window.contract.add_proposal({
-            "proposal": {
-              "AddMemberToRole": {
-                "member_id": e.target.proposalMemberId.value,
-                "role": e.target.proposalMemberRole.value,
-              },
-            }
-          }, gas.toString(), amountYokto.toString());
+          await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
         } catch (e) {
           console.log(e);
           setShowError(e);
@@ -280,22 +278,21 @@ const Dao = () => {
       try {
         console.log("ChangeConfig...")
         setShowSpinner(true);
-        await window.contract.add_proposal({
-            "proposal": {
-              "description": (e.target.proposalDescription.value).trim(),
-              "kind": {
-                "ChangeConfig": {
-                  "config": {
-                    "name": e.target.proposalChangeConfigName.value,
-                    "purpose": e.target.proposalChangeConfigPurpose.value,
-                    "metadata": e.target.proposalChangeConfigMetadata.value,
-                  },
+        let args = {
+          "proposal": {
+            "description": (e.target.proposalDescription.value).trim(),
+            "kind": {
+              "ChangeConfig": {
+                "config": {
+                  "name": e.target.proposalChangeConfigName.value,
+                  "purpose": e.target.proposalChangeConfigPurpose.value,
+                  "metadata": e.target.proposalChangeConfigMetadata.value,
                 },
               },
             },
           },
-          gas.toString(), amountYokto.toString()
-        )
+        };
+        await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
       } catch (e) {
         console.log(e);
         setShowError(e);
@@ -304,7 +301,16 @@ const Dao = () => {
       }
     }
 
-  }
+    if (showRemoveMemberFromRole && !!nearAccountValid &&
+        validateDescription) {
+      
+    }
+
+    if (showTransfer && !!nearAccountValid &&
+        validateDescription) {
+
+    }
+        
 
   const [firstRun, setFirstRun] = useState(true);
 
@@ -504,7 +510,6 @@ const Dao = () => {
     if (name && name.length >= 1) {
       return true;
     } else {
-      showMessage(field + " > 1 chars", 'warning', field);
       return false;
     }
   }
@@ -512,7 +517,6 @@ const Dao = () => {
     if (name && name.length >= 3 && name.length <= 240) {
       return true;
     } else {
-      showMessage("> 3 and < 240 chars", 'warning', field);
       return false;
     }
   }
@@ -520,7 +524,6 @@ const Dao = () => {
     if (name && !isNaN(name) && name.length > 0) {
       return true;
     } else {
-      showMessage("Please enter number", 'warning', field);
       return false;
     }
   }
@@ -533,6 +536,11 @@ const Dao = () => {
       case "proposalChangeConfigName":
       case "proposalChangeConfigPurpose":
       case "proposalChangeConfigMetadata":
+      case "proposalRemoveMemberId":
+      case "proposalRemoveMemberRole":
+      case "proposalTransferToken":
+      case "proposalTransferReceiver":
+      case "proposalTransferMessage":
         return validateString(field, value, showMessage.bind(this));
       case "amount":
         return validateNumber(field, value, showMessage.bind(this));
