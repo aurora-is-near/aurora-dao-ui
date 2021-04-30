@@ -16,7 +16,7 @@
     "prestart": "npm run build",
     "start": "parcel src/index.html --open",
     "start:web": "parcel src/index.html --open",
-    "dev": "nodemon --watch contract/src -e rs --exec \"npm run start\"",
+    "dev": "nodemon --watch src -e rs --exec \"npm run start\"",
     "test": "npm run build:contract:debug && cd contract && cargo test -- --nocapture && cd .. && jest test --runInBand"
   },
   "devDependencies": {

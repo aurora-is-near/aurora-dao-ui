@@ -105,7 +105,7 @@ const NewDao = (props) => {
         "config":{
           "name": daoName.value,
           "purpose": purpose.value,
-          "metadata": Buffer.from(metadata.value, 'base64'),
+          "metadata":  Buffer.from(metadata.value).toString('base64'),
         },
         "policy": council.value.split('\n'),
       }
@@ -339,7 +339,7 @@ const DaoInfo = (props) => {
   const [daoState, setDaoState] = useState(0);
 
   const contract = new Contract(window.walletConnection.account(), contractId, {
-    viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply'],
+    viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply', 'get_policy'],
     changeMethods: [],
   })
   
@@ -382,8 +382,16 @@ const DaoInfo = (props) => {
       }, [])  
 
   const toggleCollapse = () => {
-    contract.get_council().then((data) => {
-      setCouncil(data);
+    contract.get_policy().then((data) => {
+      var roles = [];
+      data.roles.map((item, _) => {
+        if (item.name === 'council') {
+          //console.log("Roles: ", item.kind.Group);
+          roles =item.kind.Group;
+        }
+        //console.log("> Role", item);
+      });
+      setCouncil(roles);
     });
     setCollapseState(!collapseState);
   }
@@ -391,8 +399,8 @@ const DaoInfo = (props) => {
   return (
     <>
       <div className="text-left">
-        <h6 className="" color="light">purpose: {daoConfig.purpose}<br/>
-          metadata: {daoConfig.metadata}</h6>
+        <h6 className="" color="light">purpose: {daoConfig.purpose}
+          <br/>metadata:{daoConfig.metadata}</h6>
         <div className="float-left">
           <MDBBadge className="mr-2 p-2" color="primary" pill>Available amount:
             Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toString() : ''}</MDBBadge>
