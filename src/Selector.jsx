@@ -105,7 +105,7 @@ const NewDao = (props) => {
         "config":{
           "name": daoName.value,
           "purpose": purpose.value,
-          "metadata": Buffer.from(metadata.value).toString('base64'),
+          "metadata": Buffer.from(metadata.value, 'base64'),
         },
         "policy": council.value.split('\n'),
       }
@@ -332,7 +332,7 @@ async function getDaoState(dao) {
 const DaoInfo = (props) => {
   const contractId = props.item;
   const [council, setCouncil] = useState([]);
-  const [daoConfig, setDaoConfig] = useState(null);
+  const [daoConfig, setDaoConfig] = useState({name:"", purpose: "", metadata: ""});
   const [availableAmount, setAvailableAmount] = useState(null);
   const [delegationTotalSupply, setDelegationTotalSupply] = useState(null);
   const [collapseState, setCollapseState] = useState(false);
@@ -359,7 +359,11 @@ const DaoInfo = (props) => {
   useEffect(
     () => {
       contract.get_config().then((data) => {
-        setDaoConfig(data);
+        setDaoConfig({
+          name: data.name,
+          purpose: data.purpose,
+          metadata: Buffer.from(data.metadata, 'base64').toString()
+        });
       });
     }, [])
 
@@ -387,7 +391,8 @@ const DaoInfo = (props) => {
   return (
     <>
       <div className="text-left">
-        <h6 className="" color="light">purpose: {daoConfig.purpose}</h6>
+        <h6 className="" color="light">purpose: {daoConfig.purpose}<br/>
+          metadata: {daoConfig.metadata}</h6>
         <div className="float-left">
           <MDBBadge className="mr-2 p-2" color="primary" pill>Available amount:
             Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toString() : ''}</MDBBadge>
