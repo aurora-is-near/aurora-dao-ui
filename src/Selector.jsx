@@ -332,20 +332,17 @@ async function getDaoState(dao) {
 const DaoInfo = (props) => {
   const contractId = props.item;
   const [council, setCouncil] = useState([]);
-  const [bond, setBond] = useState(null);
-  const [votePeriod, setVotePeriod] = useState(null);
-  const [gracePeriod, setGracePeriod] = useState(null);
-  const [purpose, setPurpose] = useState(null);
+  const [daoConfig, setDaoConfig] = useState(null);
+  const [availableAmount, setAvailableAmount] = useState(null);
+  const [delegationTotalSupply, setDelegationTotalSupply] = useState(null);
   const [collapseState, setCollapseState] = useState(false);
   const [daoState, setDaoState] = useState(0);
 
-
   const contract = new Contract(window.walletConnection.account(), contractId, {
-    viewMethods: ['get_council', 'get_bond', 'get_num_proposals', 'get_purpose', 'get_vote_period'],
+    viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply'],
     changeMethods: [],
   })
-
-
+  
   useEffect(
     () => {
       if (contractId !== "") {
@@ -361,26 +358,24 @@ const DaoInfo = (props) => {
 
   useEffect(
     () => {
-      contract.get_bond().then((data) => {
-        setBond(data);
-      });
-    }, [])
-
-
-  useEffect(
-    () => {
-      contract.get_vote_period().then((data) => {
-        setVotePeriod(data);
+      contract.get_config().then((data) => {
+        setDaoConfig(data);
       });
     }, [])
 
   useEffect(
-    () => {
-      contract.get_purpose().then((data) => {
-        setPurpose(data);
-      });
-    }, [])
+      () => {
+        contract.delegation_total_supply().then((data) => {
+          setDelegationTotalSupply(data);
+        });
+      }, [])
 
+  useEffect(
+      () => {
+        contract.get_available_amount().then((data) => {
+          setAvailableAmount(data);
+        });
+      }, [])  
 
   const toggleCollapse = () => {
     contract.get_council().then((data) => {
@@ -392,13 +387,12 @@ const DaoInfo = (props) => {
   return (
     <>
       <div className="text-left">
-        <h6 className="" color="light">purpose: {purpose}</h6>
+        <h6 className="" color="light">purpose: {daoConfig.purpose}</h6>
         <div className="float-left">
-          <MDBBadge className="mr-2 p-2" color="primary" pill>Bond:
-            Ⓝ {bond !== null ? (new Decimal(bond.toString()).div(yoktoNear)).toString() : ''}</MDBBadge>
-          <MDBBadge className="m-2 p-2" color="primary" pill>Vote
-            Period: {votePeriod ? timestampToReadable(votePeriod) : ''}</MDBBadge>
-          {gracePeriod ? '<MDBBadge className="m-2 p-2" color="primary" pill>Grace Period: {gracePeriod ? timestampToReadable(gracePeriod) : null}</MDBBadge>' : null}
+          <MDBBadge className="mr-2 p-2" color="primary" pill>Available amount:
+            Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toString() : ''}</MDBBadge>
+          <MDBBadge className="m-2 p-2" color="primary" pill>Delegation total supply:
+            Ⓝ {delegationTotalSupply !== null ? (new Decimal(delegationTotalSupply.toString()).div(yoktoNear)).toString() : ''}</MDBBadge>
           <MDBBadge className="m-2 p-2" color="info" pill>DAO Funds: <b>Ⓝ {daoState}</b></MDBBadge>
         </div>
         <div className="float-right">
@@ -453,9 +447,6 @@ const Selector = (props) => {
     e.preventDefault();
     mutationCtx.updateConfig({
       contract: e.target.name,
-      bond: '',
-      purpose: '',
-      votePeriod: '',
       lastShownProposal: 0,
       lastJsonData: 0,
     });
@@ -468,7 +459,6 @@ const Selector = (props) => {
   const toggleNewDao = () => {
     setShowNewDaoModal(!showNewDaoModal);
   }
-
 
   return (
     <div>
@@ -499,7 +489,6 @@ const Selector = (props) => {
         <NewDao setShowError={props.setShowError} toggleNewDao={toggleNewDao}/>
         : null}
     </div>
-
   )
 }
 
