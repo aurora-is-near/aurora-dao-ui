@@ -258,9 +258,12 @@ const Dao = () => {
           setShowSpinner(true);
           let args = {
             "proposal": {
-              "AddMemberToRole": {
-                "member_id": proposalMemberId,
-                "role": proposalMemberRole,
+              "description": proposalDescription.value.trim(),
+              "kind": {
+                "AddMemberToRole": {
+                  "member_id": proposalMemberId.value,
+                  "role": proposalMemberRole.value,
+                },
               },
             }
           };
@@ -280,13 +283,13 @@ const Dao = () => {
         setShowSpinner(true);
         let args = {
           "proposal": {
-            "description": (e.target.proposalDescription.value).trim(),
+            "description": proposalDescription.value.trim(),
             "kind": {
               "ChangeConfig": {
                 "config": {
-                  "name": e.target.proposalChangeConfigName.value,
-                  "purpose": e.target.proposalChangeConfigPurpose.value,
-                  "metadata": e.target.proposalChangeConfigMetadata.value,
+                  "name": proposalChangeConfigName.value,
+                  "purpose": proposalChangeConfigPurpose.value,
+                  "metadata": proposalChangeConfigMetadata.value,
                 },
               },
             },
@@ -302,12 +305,32 @@ const Dao = () => {
     }
 
     if (showRemoveMemberFromRole && !!nearAccountValid &&
-        validateDescription) {
-      
+        validateDescription && validateProposalRemoveMemberId && validateProposalRemoveMemberRole) {
+      try {
+        console.log("RemoveMemberFromRole...")
+        setShowSpinner(true);
+        let args = {
+          "proposal": {
+            "description": proposalDescription.value.trim(),
+            "kind": {
+              "RemoveMemberFromRole": {
+                "member_id": proposalRemoveMemberId.value,
+                "role": proposalRemoveMemberRole.value,
+              },
+            },
+          }
+        };
+        await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
+      } catch (e) {
+        console.log(e);
+        setShowError(e);
+      } finally {
+        setShowSpinner(false);
+      }      
     }
 
     if (showTransfer && !!nearAccountValid &&
-        validateDescription) {
+        validateDescription && validateProposalTransferToken && validateProposalTransferReceiver && validateProposalTransferAmount && validateProposalTransferMessage) {
 
     }
         
