@@ -1,4 +1,4 @@
-const CONTRACT_NAME = 'sputnikdao-v2.mrlsd.testnet'
+const CONTRACT_NAME = 'aurora-dao.testnet'
 
 function getConfig(env) {
   switch (env) {
@@ -8,7 +8,7 @@ function getConfig(env) {
     return {
       networkId: 'mainnet',
       nodeUrl: 'https://rpc.mainnet.near.org',
-      contractName: 'sputnikdao.near',
+      contractName: 'dao.aurora',
       walletUrl: 'https://wallet.near.org',
       helperUrl: 'https://helper.mainnet.near.org',
       explorerUrl: 'https://explorer.mainnet.near.org',
