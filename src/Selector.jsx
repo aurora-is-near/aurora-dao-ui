@@ -146,19 +146,19 @@ const NewDao = (props) => {
         "grace_period": new Decimal(gracePeriod.value).mul('3.6e12').toFixed()
       }
 
-
       try {
         setShowSpinner(true);
         const a = new Decimal(amount.value);
         const amountYokto = a.mul(yoktoNear).toFixed();
         const args = Buffer.from(JSON.stringify(argsList)).toString('base64')
-
+        // 80TGas
+        const gas = new Decimal("80000000000000");
 
         await window.factoryContract.create({
             "name": daoName.value,
             "args": args,
           },
-          new Decimal("45000000000000").toString(), amountYokto.toString(),
+          gas.toString(), amountYokto.toString(),
         )
       } catch (e) {
         console.log(e);
