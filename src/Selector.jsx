@@ -29,7 +29,6 @@ const NewDao = (props) => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [showNewDao, setShowNewDao] = useState(true);
 
-
   const [daoName, setDaoName] = useState({
     value: "",
     valid: true,
@@ -60,7 +59,6 @@ const NewDao = (props) => {
     setShowNewDao(!showNewDao);
   }
 
-
   const submitNewDao = async (e) => {
     e.preventDefault();
     e.persist();
@@ -69,7 +67,6 @@ const NewDao = (props) => {
     let validateDaoName = validateField("daoName", daoName.value);
     let validateAmount = validateField("amount", amount.value);
     let validateCouncil = validateField("council", council.value);
-
 
     if (!validateDaoName) {
       e.target.daoName.className += " is-invalid";
@@ -95,12 +92,20 @@ const NewDao = (props) => {
       e.target.amount.className += " is-valid";
     }
 
-    if (validatePurpose && validateAmount) {
+    if (!validateCouncil) {
+      e.target.council.className += " is-invalid";
+      e.target.council.classList.remove("is-valid");
+    } else {
+      e.target.council.classList.remove("is-invalid");
+      e.target.council.className += " is-valid";
+    }    
+
+    if (validateDaoName && validatePurpose && validateAmount && validateCouncil) {
       const argsList = {
         "config":{
           "name": daoName.value,
           "purpose": purpose.value,
-          "metadata": metadata.value,
+          "metadata": Buffer.from(metadata.value).toString('base64'),
         },
         "policy": council.value.split('\n'),
       }
@@ -110,8 +115,8 @@ const NewDao = (props) => {
         const a = new Decimal(amount.value);
         const amountYokto = a.mul(yoktoNear).toFixed();
         const args = Buffer.from(JSON.stringify(argsList)).toString('base64')
-        // 80TGas
-        const gas = new Decimal("80000000000000");
+        // 150 TGas
+        const gas = new Decimal("150000000000000");
 
         await window.factoryContract.create({
             "name": daoName.value,
@@ -221,6 +226,9 @@ const NewDao = (props) => {
     if (event.target.name === "council") {
       setCouncil({value: event.target.value.toLowerCase(), valid: !!event.target.value});
     }
+    if (event.target.name === "metadata") {
+      setmetadata({value: event.target.value, valid: !!event.target.value});
+    }
 
     if (event.target.name !== "council") {
       if (!validateField(event.target.name, event.target.value)) {
@@ -285,6 +293,13 @@ const NewDao = (props) => {
             </div>
           </MDBInput>
         </MDBModalBody>
+        <MDBInput name="metadata" value={metadata.value}
+                  onChange={changeHandler} label="DAO metadata"
+                  group>
+          <div className="invalid-feedback">
+            {metadata.message}
+          </div>
+        </MDBInput>        
         <MDBModalFooter className="justify-content-center">
           <MDBBtn color="unique" type="submit">
             Submit
@@ -297,13 +312,8 @@ const NewDao = (props) => {
         </MDBModalFooter>
       </form>
     </MDBModal>
-
-
   )
-
-
 }
-
 
 async function getDaoState(dao) {
   const nearConfig = getConfig(process.env.NODE_ENV || 'development')
