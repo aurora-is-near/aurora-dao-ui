@@ -35,7 +35,6 @@ const NewDao = (props) => {
     valid: true,
     message: "",
   });
-
   const [purpose, setPurpose] = useState({
     value: "",
     valid: true,
@@ -51,19 +50,7 @@ const NewDao = (props) => {
     valid: true,
     message: "",
   });
-
-  const [bond, setBond] = useState({
-    value: "",
-    valid: true,
-    message: "",
-  });
-
-  const [votePeriod, setVotePeriod] = useState({
-    value: "",
-    valid: true,
-    message: "",
-  });
-  const [gracePeriod, setGracePeriod] = useState({
+  const [metadata, setmetadata] = useState({
     value: "",
     valid: true,
     message: "",
@@ -82,9 +69,6 @@ const NewDao = (props) => {
     let validateDaoName = validateField("daoName", daoName.value);
     let validateAmount = validateField("amount", amount.value);
     let validateCouncil = validateField("council", council.value);
-    let validateBond = validateField("bond", bond.value);
-    let validateVotePeriod = validateField("votePeriod", votePeriod.value);
-    let validateGracePeriod = validateField("gracePeriod", gracePeriod.value);
 
 
     if (!validateDaoName) {
@@ -111,39 +95,14 @@ const NewDao = (props) => {
       e.target.amount.className += " is-valid";
     }
 
-    if (!validateBond) {
-      e.target.bond.className += " is-invalid";
-      e.target.bond.classList.remove("is-valid");
-    } else {
-      e.target.bond.classList.remove("is-invalid");
-      e.target.bond.className += " is-valid";
-    }
-
-    if (!validateVotePeriod) {
-      e.target.votePeriod.className += " is-invalid";
-      e.target.votePeriod.classList.remove("is-valid");
-    } else {
-      e.target.votePeriod.classList.remove("is-invalid");
-      e.target.votePeriod.className += " is-valid";
-    }
-
-    if (!validateGracePeriod) {
-      e.target.gracePeriod.className += " is-invalid";
-      e.target.gracePeriod.classList.remove("is-valid");
-    } else {
-      e.target.gracePeriod.classList.remove("is-invalid");
-      e.target.gracePeriod.className += " is-valid";
-    }
-
-
-    if (validatePurpose && validateAmount && validateBond && validateGracePeriod && validateVotePeriod) {
-
+    if (validatePurpose && validateAmount) {
       const argsList = {
-        "purpose": purpose.value,
-        "council": council.value.split('\n'),
-        "bond": new Decimal(bond.value).mul(yoktoNear).toFixed(),
-        "vote_period": new Decimal(votePeriod.value).mul('3.6e12').toFixed(),
-        "grace_period": new Decimal(gracePeriod.value).mul('3.6e12').toFixed()
+        "config":{
+          "name": daoName.value,
+          "purpose": purpose.value,
+          "metadata": metadata.value,
+        },
+        "policy": council.value.split('\n'),
       }
 
       try {
@@ -166,11 +125,7 @@ const NewDao = (props) => {
       } finally {
         setShowSpinner(false);
       }
-
-
     }
-
-
   }
 
   const validateCouncil = (field, name, showMessage) => {
@@ -235,16 +190,6 @@ const NewDao = (props) => {
         case "council":
           setCouncil({message: message});
           break;
-        case "bond":
-          setBond({message: message});
-          break;
-        case "votePeriod":
-          setVotePeriod({message: message});
-          break;
-        case "gracePeriod":
-          setGracePeriod({message: message});
-          break;
-
       }
     }
   };
@@ -259,10 +204,6 @@ const NewDao = (props) => {
         return validatePurpose(field, value, showMessage.bind(this));
       case "amount":
         return validateAmount(field, value, showMessage.bind(this));
-      case "bond":
-      case "votePeriod":
-      case "gracePeriod":
-        return validateNumber(field, value, showMessage.bind(this));
     }
   };
 
@@ -279,15 +220,6 @@ const NewDao = (props) => {
     }
     if (event.target.name === "council") {
       setCouncil({value: event.target.value.toLowerCase(), valid: !!event.target.value});
-    }
-    if (event.target.name === "bond") {
-      setBond({value: event.target.value, valid: !!event.target.value});
-    }
-    if (event.target.name === "votePeriod") {
-      setVotePeriod({value: event.target.value, valid: !!event.target.value});
-    }
-    if (event.target.name === "gracePeriod") {
-      setGracePeriod({value: event.target.value, valid: !!event.target.value});
     }
 
     if (event.target.name !== "council") {
@@ -320,7 +252,6 @@ const NewDao = (props) => {
             onSubmit={submitNewDao}
       >
         <MDBModalBody>
-
           <MDBInput name="daoName" value={daoName.value}
                     onChange={changeHandler} label="Enter DAO Name (will be prefix of .sputnikdao.near)"
                     required group>
@@ -328,6 +259,7 @@ const NewDao = (props) => {
               {daoName.message}
             </div>
           </MDBInput>
+          
           <MDBInput name="purpose" value={purpose.value}
                     onChange={changeHandler} label="Enter Purpose"
                     required group>
@@ -341,30 +273,6 @@ const NewDao = (props) => {
                     required group type="textarea">
             <div className="invalid-feedback">
               {council.message}
-            </div>
-          </MDBInput>
-
-          <MDBInput name="bond" value={bond.value}
-                    onChange={changeHandler} label="Enter Bond in NEAR"
-                    required group>
-            <div className="invalid-feedback">
-              {bond.message}
-            </div>
-          </MDBInput>
-
-          <MDBInput name="votePeriod" value={votePeriod.value}
-                    onChange={changeHandler} label="Enter Vote Period in hours"
-                    required group>
-            <div className="invalid-feedback">
-              {votePeriod.message}
-            </div>
-          </MDBInput>
-
-          <MDBInput name="gracePeriod" value={gracePeriod.value}
-                    onChange={changeHandler} label="Enter Grace Period in hours"
-                    required group>
-            <div className="invalid-feedback">
-              {gracePeriod.message}
             </div>
           </MDBInput>
 
