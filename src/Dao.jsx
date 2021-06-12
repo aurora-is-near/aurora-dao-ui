@@ -316,6 +316,9 @@ const Dao = () => {
       }
     }
 
+    const gas = new Decimal("150000000000000");
+    const amountYokto = a.mul(yoktoNear).toFixed();
+    
     if (showVotePeriod) {
       if (validateTarget && nearAccountValid && validateDescription) {
         const votePeriod = new Decimal(e.target.votePeriod.value).mul('3.6e12');
@@ -323,7 +326,6 @@ const Dao = () => {
           setShowSpinner(true);
           await window.contract.add_proposal({
               proposal: {
-                target: e.target.proposalTarget.value,
                 description: (e.target.proposalDescription.value + " " + parseForum).trim(),
                 kind: {
                   type: 'ChangeVotePeriod',
@@ -331,7 +333,7 @@ const Dao = () => {
                 }
               },
             },
-            new Decimal("30000000000000").toString(), bond.toString(),
+            gas.toString(), amountYokto.toString(),
           )
         } catch (e) {
           console.log(e);
@@ -341,7 +343,6 @@ const Dao = () => {
         }
       }
     }
-
   }
 
   const [firstRun, setFirstRun] = useState(true);

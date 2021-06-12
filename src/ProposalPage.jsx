@@ -55,7 +55,6 @@ export const Proposal = (props) => {
   }
 
   const handleVoteYes = () => {
-
     if (props.data.votes[window.walletConnection.getAccountId()] === undefined) {
       vote('Yes').then().catch((e) => {
         console.log(e);
@@ -85,10 +84,8 @@ export const Proposal = (props) => {
     setVotedWarning(false);
   }
 
-
   return (
     <MDBCol className="col-12 col-sm-8 col-lg-6 mx-auto">
-
       <MDBModal modalStyle="danger" centered size="sm" isOpen={votedWarning} toggle={toggleVoteWarningOff}>
         <MDBModalHeader>Warning!</MDBModalHeader>
         <MDBModalBody className="text-center">
@@ -348,9 +345,15 @@ const ProposalPage = () => {
 
   useEffect(
     () => {
-      window.contract.get_council()
+      window.contract.get_policy()
         .then(r => {
-          setCouncil(r);
+          var roles = [];
+          data.roles.map((item, _) => {
+            if (item.name === 'council') {
+              roles =item.kind.Group;
+            }
+          });
+          setCouncil(roles);
         }).catch((e) => {
         console.log(e);
         setShowError(e);
