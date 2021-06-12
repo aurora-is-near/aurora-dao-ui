@@ -65,6 +65,10 @@ const Dao = () => {
   const [showNewProposalNotification, setShowNewProposalNotification] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
   const [daoState, setDaoState] = useState(0);
+  const [daoConfig, setDaoConfig] = useState({name:"", purpose: "", metadata: ""});
+  const [availableAmount, setAvailableAmount] = useState(null);
+  const [delegationTotalSupply, setDelegationTotalSupply] = useState(null);
+
 
   let {dao} = useParams();
 
@@ -116,8 +120,8 @@ const Dao = () => {
         }
       } else {
         window.contract = new Contract(window.walletConnection.account(), stateCtx.config.contract, {
-          viewMethods: ['get_council', 'get_bond', 'get_proposal', 'get_num_proposals', 'get_proposals', 'get_vote_period', 'get_purpose'],
-          changeMethods: ['vote', 'add_proposal', 'finalize'],
+          viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply', 'get_policy'],
+          changeMethods: ['add_proposal', 'act_proposal'],
         })
       }
     },
@@ -179,7 +183,6 @@ const Dao = () => {
     let validateChangePurpose = validateField("changePurpose", changePurpose.value);
     let validateAmount = validateField("proposalAmount", proposalAmount.value);
 
-
     if (showChangePurpose) {
       if (!validateChangePurpose) {
         e.target.changePurpose.className += " is-invalid";
@@ -223,7 +226,6 @@ const Dao = () => {
       e.target.proposalDiscussion.classList.remove("is-invalid");
       e.target.proposalDiscussion.className += " is-valid";
     }
-
 
     if (showPayout) {
       if (!validateAmount) {
@@ -345,7 +347,7 @@ const Dao = () => {
   const [firstRun, setFirstRun] = useState(true);
 
 
-  const getProposals = () => {
+  /*const getProposals = () => {
     if (stateCtx.config.contract !== "") {
       window.contract.get_num_proposals()
         .then(number => {
@@ -377,8 +379,7 @@ const Dao = () => {
         setShowLoading(false);
       })
     }
-  }
-
+  }*/
 
   async function fetchUrl() {
     const sputnikDao = stateCtx.config.contract;
@@ -417,8 +418,7 @@ const Dao = () => {
   )
   */
 
-
-  useEffect(
+  /*useEffect(
     () => {
       if (!firstRun) {
         const interval = setInterval(() => {
@@ -432,7 +432,7 @@ const Dao = () => {
       }
     },
     [stateCtx.config.contract, firstRun]
-  )
+  )*/
 
   useEffect(
     () => {
@@ -448,7 +448,7 @@ const Dao = () => {
     [stateCtx.config.contract]
   )
 
-  useEffect(
+  /*useEffect(
     () => {
       if (stateCtx.config.contract !== "") {
         window.contract.get_council()
@@ -461,15 +461,14 @@ const Dao = () => {
       }
     },
     [stateCtx.config.contract]
-  )
-
+  )*/
 
   useEffect(
     () => {
       if (stateCtx.config.contract !== "") {
-        window.contract.get_bond()
+        window.contract.delegation_total_supply()
           .then(r => {
-            setBond(r);
+            setDelegationTotalSupply(r);
           }).catch((e) => {
           console.log(e);
           setShowError(e);
@@ -480,6 +479,42 @@ const Dao = () => {
   )
 
   useEffect(
+      () => {
+        if (stateCtx.config.contract !== "") {
+          window.contract.get_policy()
+              .then((data) => {
+                var roles = [];
+                data.roles.map((item, _) => {
+                  if (item.name === 'council') {
+                    roles =item.kind.Group;
+                  }
+                });
+                setCouncil(roles);
+              }).catch((e) => {
+            console.log(e);
+            setShowError(e);
+          })
+        }
+      },
+      [stateCtx.config.contract]
+  )  
+  
+  useEffect(
+      () => {
+        if (stateCtx.config.contract !== "") {
+          window.contract.get_available_amount()
+              .then(r => {
+                setAvailableAmount(r);
+              }).catch((e) => {
+            console.log(e);
+            setShowError(e);
+          })
+        }
+      },
+      [stateCtx.config.contract]
+  )
+
+  /*useEffect(
     () => {
       if (stateCtx.config.contract !== "") {
         window.contract.get_purpose()
@@ -500,7 +535,7 @@ const Dao = () => {
       }
     },
     [stateCtx.config.contract]
-  )
+  )*/
 
   const handleDaoChange = () => {
     mutationCtx.updateConfig({
@@ -802,7 +837,6 @@ const Dao = () => {
                                               href={stateCtx.config.network.explorerUrl}>{stateCtx.config.network.networkId}</a>
                               </li>
                               <li>DAO: {stateCtx.config.contract}</li>
-                              <li>Bond: Ⓝ {bond ? (new Decimal(bond).div(yoktoNear)).toString() : ''}</li>
                               <li>Purpose:{" "}
                                 {
                                   daoPurpose.split(" ").map((item, key) => (
@@ -812,6 +846,8 @@ const Dao = () => {
                                 }
                               </li>
                               <li>Vote Period: {daoVotePeriod ? timestampToReadable(daoVotePeriod) : ''}</li>
+                              <li>Available amount: Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toString() : ''}</li>
+                              <li>Delegation total supply: Ⓝ {delegationTotalSupply !== null ? (new Decimal(delegationTotalSupply.toString()).div(yoktoNear)).toString() : ''}</li>
                               <li>DAO Funds: Ⓝ {daoState ? daoState : ''}</li>
                             </ul>
                           </MDBCardBody>

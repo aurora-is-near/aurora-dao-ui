@@ -339,8 +339,8 @@ const ProposalPage = () => {
   useEffect(
     () => {
       window.contract = new Contract(window.walletConnection.account(), dao, {
-        viewMethods: ['get_council', 'get_bond', 'get_proposal', 'get_num_proposals', 'get_proposals', 'get_vote_period', 'get_purpose'],
-        changeMethods: ['vote', 'add_proposal', 'finalize'],
+        viewMethods: ['get_policy', 'get_proposal', 'get_num_proposals', 'get_proposals'],
+        changeMethods: ['add_proposal', 'act_proposal'],
       })
     },
     [dao]

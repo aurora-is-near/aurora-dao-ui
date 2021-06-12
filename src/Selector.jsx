@@ -386,10 +386,8 @@ const DaoInfo = (props) => {
       var roles = [];
       data.roles.map((item, _) => {
         if (item.name === 'council') {
-          //console.log("Roles: ", item.kind.Group);
           roles =item.kind.Group;
         }
-        //console.log("> Role", item);
       });
       setCouncil(roles);
     });
