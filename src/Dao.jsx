@@ -348,7 +348,8 @@ const Dao = () => {
   const [firstRun, setFirstRun] = useState(true);
 
 
-  /*const getProposals = () => {
+  const getProposals = () => {
+    /*
     if (stateCtx.config.contract !== "") {
       window.contract.get_num_proposals()
         .then(number => {
@@ -379,8 +380,8 @@ const Dao = () => {
         setShowError(e);
         setShowLoading(false);
       })
-    }
-  }*/
+    }*/
+  }
 
   async function fetchUrl() {
     const sputnikDao = stateCtx.config.contract;
@@ -389,8 +390,6 @@ const Dao = () => {
     return json[sputnikDao];
   }
 
-
-  /*
   useEffect(() => {
     if (!firstRun) {
       const interval = setInterval(() => {
@@ -410,16 +409,14 @@ const Dao = () => {
     }
   }, [stateCtx.config.contract, firstRun]);
 
-
   useEffect(
     () => {
       getProposals();
     },
     [stateCtx.config.contract, stateCtx.config.lastJsonData]
   )
-  */
 
-  /*useEffect(
+  useEffect(
     () => {
       if (!firstRun) {
         const interval = setInterval(() => {
@@ -433,7 +430,7 @@ const Dao = () => {
       }
     },
     [stateCtx.config.contract, firstRun]
-  )*/
+  )
 
   useEffect(
     () => {
@@ -448,21 +445,6 @@ const Dao = () => {
     },
     [stateCtx.config.contract]
   )
-
-  /*useEffect(
-    () => {
-      if (stateCtx.config.contract !== "") {
-        window.contract.get_council()
-          .then(r => {
-            setCouncil(r);
-          }).catch((e) => {
-          console.log(e);
-          setShowError(e);
-        })
-      }
-    },
-    [stateCtx.config.contract]
-  )*/
 
   useEffect(
     () => {
@@ -1117,7 +1099,6 @@ const Dao = () => {
           <Selector setShowError={setShowError} setSelectDao={setSelectDao}/>
           : null
         }
-        {showLoading && !selectDao ? <Loading/> : null}
       </MDBContainer>
       <Footer/>
     </MDBView>
