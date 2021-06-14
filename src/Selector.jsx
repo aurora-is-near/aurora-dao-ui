@@ -393,7 +393,7 @@ const DaoInfo = (props) => {
     });
     setCollapseState(!collapseState);
   }
-contract.
+
   return (
     <>
       <div className="text-left">

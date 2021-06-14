@@ -630,6 +630,21 @@ const Dao = () => {
   };
 
   const changeSelectHandler = (event) => {
+/*
+Roles Kinds:    
+    ChangeConfig
+    ChangePolicy
+    AddMemberToRole
+    RemoveMemberFromRole
+    FunctionCall
+    UpgradeSelf
+    UpgradeRemote
+    Transfer
+    SetStakingContract
+    AddBounty
+    BountyDone 
+    Vote
+*/    
     if (event.target.value === "NewCouncil" || event.target.value === "RemoveCouncil") {
       setShowCouncilChange(true)
       setShowPayout(false)
@@ -1073,11 +1088,16 @@ const Dao = () => {
                     <select onChange={changeSelectHandler} name="proposalKind" required
                             className="browser-default custom-select">
                       {/*<option value="false">Choose proposal type</option>*/}
-                      <option value="Payout">Payout</option>
-                      <option value="NewCouncil">New Council</option>
-                      <option value="RemoveCouncil">Remove Council</option>
-                      <option value="ChangeVotePeriod">Change Vote Period</option>
-                      <option value="ChangePurpose">Change Purpose</option>
+                      <option value="AddMemberToRole">Add Member To Role</option>
+                      <option value="ChangeConfig">Change Config</option>
+                      <option value="ChangePolicy">Change Policy</option>
+                      <option value="RemoveMemberFromRole">Remove Member From Role</option>
+                      <option value="FunctionCall">Function Call</option>
+                      <option value="UpgradeSelf">Upgrade Self</option>
+                      <option value="UpgradeRemote">Upgrade Remote</option>
+                      <option value="Transfer">Transfer</option>
+                      <option value="SetStakingContract">Set Staking Contract</option>
+                      <option value="Vote">Vote</option>
                     </select>
                   </div>
                   <MDBInput disabled={disableTarget} name="proposalTarget" value={proposalTarget.value}
