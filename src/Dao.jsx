@@ -52,7 +52,6 @@ const Dao = () => {
   const [council, setCouncil] = useState([]);
   const [bond, setBond] = useState(0);
   const [daoVotePeriod, setDaoVotePeriod] = useState(0);
-  const [daoPurpose, setDaoPurpose] = useState('');
   const [showError, setShowError] = useState(null);
   const [addProposalModal, setAddProposalModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
@@ -466,6 +465,36 @@ const Dao = () => {
         if (stateCtx.config.contract !== "") {
           window.contract.get_policy()
               .then((data) => {
+                setBond(data.proposal_bond);
+              }).catch((e) => {
+            console.log(e);
+            setShowError(e);
+          })
+        }
+      },
+      [stateCtx.config.contract]
+  )
+  
+  useEffect(
+      () => {
+        if (stateCtx.config.contract !== "") {
+          window.contract.get_policy()
+              .then((data) => {
+                setDaoVotePeriod(data.proposal_period);
+              }).catch((e) => {
+            console.log(e);
+            setShowError(e);
+          })
+        }
+      },
+      [stateCtx.config.contract]
+  )
+  
+  useEffect(
+      () => {
+        if (stateCtx.config.contract !== "") {
+          window.contract.get_policy()
+              .then((data) => {
                 var roles = [];
                 data.roles.map((item, _) => {
                   if (item.name === 'council') {
@@ -480,7 +509,25 @@ const Dao = () => {
         }
       },
       [stateCtx.config.contract]
-  )  
+  )
+
+  useEffect(
+      () => {
+        if (stateCtx.config.contract !== "") {
+          window.contract.get_config().then((data) => {
+              setDaoConfig({
+                name: data.name,
+                purpose: data.purpose,
+                metadata: Buffer.from(data.metadata, 'base64').toString()
+              });
+          }).catch((e) => {
+            console.log(e);
+            setShowError(e);
+          })
+        }
+      }, 
+      [stateCtx.config.contract]
+  )
   
   useEffect(
       () => {
@@ -822,15 +869,17 @@ const Dao = () => {
                               <li>DAO: {stateCtx.config.contract}</li>
                               <li>Purpose:{" "}
                                 {
-                                  daoPurpose.split(" ").map((item, key) => (
+                                  daoConfig.purpose.split(" ").map((item, key) => (
                                     /(((https?:\/\/)|(www\.))[^\s]+)/g.test(item) ?
                                       <a target="_blank" href={item}>{item}{" "}</a> : <>{item}{" "}</>
                                   ))
                                 }
                               </li>
+                              <li>Metadata:{daoConfig.metadata}</li>
                               <li>Vote Period: {daoVotePeriod ? timestampToReadable(daoVotePeriod) : ''}</li>
-                              <li>Available amount: Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toString() : ''}</li>
-                              <li>Delegation total supply: Ⓝ {delegationTotalSupply !== null ? (new Decimal(delegationTotalSupply.toString()).div(yoktoNear)).toString() : ''}</li>
+                              <li>Proposal Bond: Ⓝ {bond !== null ? (new Decimal(bond.toString()).div(yoktoNear)).toFixed(2).toString() : ''}</li>
+                              <li>Available amount: Ⓝ {availableAmount !== null ? (new Decimal(availableAmount.toString()).div(yoktoNear)).toFixed(2).toString() : ''}</li>
+                              <li>Delegation total supply: Ⓝ {delegationTotalSupply !== null ? (new Decimal(delegationTotalSupply.toString()).div(yoktoNear)).toFixed(2).toString() : ''}</li>
                               <li>DAO Funds: Ⓝ {daoState ? daoState : ''}</li>
                             </ul>
                           </MDBCardBody>
