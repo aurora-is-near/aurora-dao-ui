@@ -109,7 +109,89 @@ export const Proposal = (props) => {
           {props.data.kind.Vote !== undefined ? "Vote: " : null}
           <div className="clearfix"/>
         </MDBCardHeader>
+        <MDBCardBody>
+          <div className="float-left">
+              {props.data.status === 'Rejected' ?
+                  <h4><MDBBadge color="danger">{props.data.status}</MDBBadge></h4> : null
+              }
+              {props.data.status === 'Expired' ?
+                  <h4><MDBBadge color="danger">{props.data.status}</MDBBadge></h4> : null
+              }
+              {props.data.status === 'Approved' ?
+                  <h4><MDBBadge color="green">{props.data.status}</MDBBadge>{" "}<MDBIcon
+                      className="amber-text"
+                      icon="crown"/></h4> : null
+              }
+              {props.data.status === 'InProgress' ?
+                  <h4><MDBBadge color="green">Active / {props.data.status}</MDBBadge></h4> : null
+              }
+              {props.data.status === 'Removed' ?
+                  <h4><MDBBadge color="danger">{props.data.status}</MDBBadge></h4> : null
+              }
+              {props.data.status === 'Moved' ?
+                  <h4><MDBBadge color="danger">{props.data.status}</MDBBadge></h4> : null
+              }
+          </div>
+          <div className="float-right h4-responsive">
+              <a href={"#/" + props.dao + "/" + props.id}
+                target="_blank"><MDBIcon icon="link"/></a> #{props.id}</div>
+          <div className="clearfix"/>
+          <MDBCardText>
+            <MDBBox
+                className="h4-responsive black-text">{props.data.description.split('/t/')[0]}</MDBBox>
+            {props.data.description.split('/t/')[1] ?
+                <a target="_blank"
+                   href={"https://gov.near.org/t/" + props.data.description.split('/t/')[1]}
+                   rel="nofollow">{"https://gov.near.org/t/" + props.data.description.split('/t/')[1]}</a>
+                : null}
+            <hr/>
+            <div className="float-left text-muted h4-responsive">proposer</div>
+            <MDBBox className="float-right h4-responsive" style={{width: '80%'}}>
+              <a className="text-right float-right" target="_blank" style={{wordBreak: "break-word"}}
+                 href={stateCtx.config.network.explorerUrl + "/accounts/" + props.data.proposer.toLowerCase()}>{props.data.proposer.toLowerCase()}</a>
+            </MDBBox>
+            <br/>
+            <div className="clearfix"/>
+          </MDBCardText>
 
+          {props.council.includes(window.walletConnection.getAccountId()) ?
+              <MDBTooltip
+                  tag="span"
+                  placement="top"
+              >
+                <MDBBtn
+                    style={{borderRadius: 50}}
+                    disabled={showSpinner || props.data.status !== 'InProgress'}
+                    onClick={handleVoteYes}
+                    floating
+                    color="green darken-1"
+                    className='h5-responsive'
+                    size="sm">
+                  <MDBIcon icon='thumbs-up' size="2x" className='white-text m-2 p-2'/>
+                </MDBBtn>
+                <span>Vote YES</span>
+              </MDBTooltip>
+              : null}
+
+          {props.council.includes(window.walletConnection.getAccountId()) ?
+              <MDBTooltip
+                  tag="span"
+                  placement="top"
+              >
+                <MDBBtn
+                    style={{borderRadius: 50}}
+                    disabled={showSpinner || props.data.status !== 'InProgress'}
+                    onClick={handleVoteNo}
+                    color="red"
+                    floating
+                    className='h5-responsive float-right'
+                    size="sm">
+                  <MDBIcon icon='thumbs-down' size="2x" className='white-text m-2 p-2'/>
+                </MDBBtn>
+                <span>Vote NO</span>
+              </MDBTooltip>
+              : null}
+        </MDBCardBody>
       </MDBCard>
       {/*<QuestionModal show={showModal} text={modalText} handleVoteYes={handleVoteYes}/>*/}
     </MDBCol>
