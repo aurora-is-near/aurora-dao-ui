@@ -119,7 +119,7 @@ const Dao = () => {
         }
       } else {
         window.contract = new Contract(window.walletConnection.account(), stateCtx.config.contract, {
-          viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply', 'get_policy'],
+          viewMethods: ['get_available_amount', 'get_config', 'delegation_total_supply', 'get_policy', 'get_proposals'],
           changeMethods: ['add_proposal', 'act_proposal'],
         })
       }
@@ -348,38 +348,25 @@ const Dao = () => {
 
 
   const getProposals = () => {
-    /*
     if (stateCtx.config.contract !== "") {
-      window.contract.get_num_proposals()
-        .then(number => {
-          setNumberProposals(number);
-          mutationCtx.updateConfig({
-            lastShownProposal: number
+      let fromIndex = 0;
+      window.contract.get_proposals({from_index: fromIndex, limit: 100})
+        .then(list => {
+          const t = []
+          setNumberProposals(list.length);
+          list.map((item, key) => {
+            const t2 = {}
+            Object.assign(t2, {key: fromIndex + key}, item);
+            t.push(t2);
           })
-          let fromIndex = 0;
-          if (number >= 100) {
-            fromIndex = 100;
-          }
-          if (number >= 200) {
-            fromIndex = 200;
-          }
-          window.contract.get_proposals({from_index: fromIndex, limit: 100})
-            .then(list => {
-              const t = []
-              list.map((item, key) => {
-                const t2 = {}
-                Object.assign(t2, {key: fromIndex + key}, item);
-                t.push(t2);
-              })
-              setProposals(t);
-              setShowLoading(false);
-            });
+          setProposals(t);
+          setShowLoading(false);
         }).catch((e) => {
-        console.log(e);
-        setShowError(e);
-        setShowLoading(false);
-      })
-    }*/
+          console.log(e);
+          setShowError(e);
+          setShowLoading(false);
+        })
+    }
   }
 
   async function fetchUrl() {
@@ -543,29 +530,6 @@ const Dao = () => {
       },
       [stateCtx.config.contract]
   )
-
-  /*useEffect(
-    () => {
-      if (stateCtx.config.contract !== "") {
-        window.contract.get_purpose()
-          .then(r => {
-            setDaoPurpose(r)
-          }).catch((e) => {
-          console.log(e);
-          setShowError(e);
-        })
-
-        window.contract.get_vote_period()
-          .then(r => {
-            setDaoVotePeriod(r)
-          }).catch((e) => {
-          console.log(e);
-          setShowError(e);
-        })
-      }
-    },
-    [stateCtx.config.contract]
-  )*/
 
   const handleDaoChange = () => {
     mutationCtx.updateConfig({
@@ -1008,17 +972,8 @@ Roles Kinds:
                 proposals.sort((a, b) => b.key >= a.key ? 1 : -1).map((item, key) => (
                   <>
                     {
-                      (convertDuration(item.vote_period_end) > new Date() && item.status === 'Vote' && switchState.switchInProgress)
-                      || (convertDuration(item.vote_period_end) < new Date() && item.status === 'Vote' && switchState.switchExpired)
-                      || switchState.switchAll
-                      || (item.status === 'Fail' && switchState.switchDone)
-                      || (item.status === 'Success' && switchState.switchDone)
-                      || (convertDuration(item.vote_period_end) > new Date() && item.status === 'Vote' && item.key >= stateCtx.config.lastShownProposal && switchState.switchNew)
-
-                        ?
                         <Proposal dao={stateCtx.config.contract} data={item} key={key} id={item.key} council={council}
                                   setShowError={setShowError}/>
-                        : null
                     }
                   </>
                 ))
