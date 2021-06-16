@@ -199,6 +199,48 @@ export const Proposal = (props) => {
             <MDBIcon far
                      icon='clock'/>{" "}{convertDuration(props.data.submission_time).toLocaleDateString()} {convertDuration(props.data.submission_time).toLocaleTimeString()}
           </li>
+          <li className='list-inline-item pr-2'>
+            <div>
+              {props.data.votes !== undefined && Object.keys(props.data.votes).length !== 0 && Object.values(props.data.votes).includes('Approve') ?
+                  <MDBPopover
+                      placement="top"
+                      popover
+                      clickable
+                      domElement='div'
+                      id="popover1"
+                  >
+                    <div className="d-inline-block">
+                      <MDBIcon icon='thumbs-up' size="2x" className='lime-text mr-1'/>
+                    </div>
+                    <div>
+                      <MDBPopoverBody>
+                        <div className="h4-responsive">
+                          {
+                            Object.keys(props.data.votes).map((item, key) => (
+                                <>
+                                  {props.data.votes[item] === 'Approve' ?
+                                      <li key={key}>{item}</li>
+                                      : null
+                                  }
+                                </>
+                            ))
+
+                          }
+                        </div>
+                      </MDBPopoverBody>
+                    </div>
+                  </MDBPopover>
+                  :
+                  <MDBIcon icon='thumbs-up' size="2x" className='lime-text mr-1'/>
+              }
+              <span className="white-text h3-responsive">
+              {props.data.vote_counts['council'] !== undefined ?
+                  props.data.vote_counts['council'][0]
+                  : 0
+              }
+              </span>
+            </div>
+          </li>
         </ul>
       </div>
       {/*<QuestionModal show={showModal} text={modalText} handleVoteYes={handleVoteYes}/>*/}
