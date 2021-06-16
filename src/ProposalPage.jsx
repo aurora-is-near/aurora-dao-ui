@@ -224,7 +224,6 @@ export const Proposal = (props) => {
                                   }
                                 </>
                             ))
-
                           }
                         </div>
                       </MDBPopoverBody>
@@ -236,6 +235,48 @@ export const Proposal = (props) => {
               <span className="white-text h3-responsive">
               {props.data.vote_counts['council'] !== undefined ?
                   props.data.vote_counts['council'][0]
+                  : 0
+              }
+              </span>
+            </div>
+          </li>
+
+          <li className='list-inline-item pr-2'>
+            <div>
+              {props.data.votes !== undefined && Object.keys(props.data.votes).length !== 0 && Object.values(props.data.votes).includes('Reject') ?
+                  <MDBPopover
+                      placement="top"
+                      popover
+                      clickable
+                      domElement='div'
+                      id="popover1"
+                  >
+                    <div className="d-inline-block">
+                      <MDBIcon icon='thumbs-down' size="2x" className='amber-text mr-1'/>
+                    </div>
+                    <div>
+                      <MDBPopoverBody>
+                        <div className="h4-responsive">
+                          {
+                            Object.keys(props.data.votes).map((item, key) => (
+                                <>
+                                  {props.data.votes[item] === 'Reject' ?
+                                      <li key={key}>{item}</li>
+                                      : null
+                                  }
+                                </>
+                            ))
+                          }
+                        </div>
+                      </MDBPopoverBody>
+                    </div>
+                  </MDBPopover>
+                  :
+                  <MDBIcon icon='thumbs-down' size="2x" className='amber-text mr-1'/>
+              }
+              <span className="white-text h3-responsive">
+              {props.data.vote_counts['council'] !== undefined ?
+                  props.data.vote_counts['council'][1]
                   : 0
               }
               </span>
