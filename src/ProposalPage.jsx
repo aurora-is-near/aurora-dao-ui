@@ -193,6 +193,14 @@ export const Proposal = (props) => {
               : null}
         </MDBCardBody>
       </MDBCard>
+      <div className='rounded-bottom mdb-color lighten-3 text-center pt-3 pl-5 pr-5'>
+        <ul className='list-unstyled list-inline font-small'>
+          <li className='list-inline-item pr-2 white-text h4-responsive'>
+            <MDBIcon far
+                     icon='clock'/>{" "}{convertDuration(props.data.submission_time).toLocaleDateString()} {convertDuration(props.data.submission_time).toLocaleTimeString()}
+          </li>
+        </ul>
+      </div>
       {/*<QuestionModal show={showModal} text={modalText} handleVoteYes={handleVoteYes}/>*/}
     </MDBCol>
   )
