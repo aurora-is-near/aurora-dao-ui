@@ -45,8 +45,6 @@ const Dao = () => {
   const routerCtx = useRouter()
   const stateCtx = useGlobalState()
   const mutationCtx = useGlobalMutation()
-  const [buttonDisabled, setButtonDisabled] = useState(true)
-  const [showNotification, setShowNotification] = useState(false)
   const [numberProposals, setNumberProposals] = useState(0);
   const [proposals, setProposals] = useState(null);
   const [council, setCouncil] = useState([]);
@@ -56,10 +54,11 @@ const Dao = () => {
   const [addProposalModal, setAddProposalModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showCouncilChange, setShowCouncilChange] = useState(false);
-  const [showPayout, setShowPayout] = useState(true);
-  const [showChangePurpose, setShowChangePurpose] = useState(false);
+  
+  const [showAddMemberToRole, setShowAddMemberToRole] = useState(true);
+  const [showChangeConfig, setShowChangeConfig] = useState(false);
+  
   const [showVotePeriod, setShowVotePeriod] = useState(false);
-  const [disableTarget, setDisableTarget] = useState(false);
   const [selectDao, setSelectDao] = useState(false);
   const [showNewProposalNotification, setShowNewProposalNotification] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
@@ -71,11 +70,6 @@ const Dao = () => {
 
   let {dao} = useParams();
 
-  const [proposalKind, setProposalKind] = useState({
-    value: "",
-    valid: true,
-    message: "",
-  });
   const [proposalTarget, setProposalTarget] = useState({
     value: "",
     valid: true,
@@ -86,16 +80,18 @@ const Dao = () => {
     valid: true,
     message: "",
   });
-  const [proposalDiscussion, setProposalDiscussion] = useState({
+  const [proposalMemberRole, setProposalMemberRole] = useState({
     value: "",
     valid: true,
     message: "",
   });
-  const [proposalAmount, setProposalAmount] = useState({
+  const [proposalMemberId, setProposalMemberId] = useState({
     value: "",
     valid: true,
     message: "",
-  });
+  }); 
+  
+  
   const [votePeriod, setVotePeriod] = useState({
     value: "",
     valid: true,
@@ -170,45 +166,14 @@ const Dao = () => {
     }
   }
 
-
   const submitProposal = async (e) => {
     e.preventDefault();
     e.persist();
 
-    const nearAccountValid = await accountExists(proposalTarget.value);
-    let validateTarget = validateField("proposalTarget", proposalTarget.value);
+    const nearAccountValid = window.walletConnection.getAccountId();
     let validateDescription = validateField("proposalDescription", proposalDescription.value);
-    let validateDiscussion = validateField("proposalDiscussion", proposalDiscussion.value);
-    let validateChangePurpose = validateField("changePurpose", changePurpose.value);
-    let validateAmount = validateField("proposalAmount", proposalAmount.value);
-
-    if (showChangePurpose) {
-      if (!validateChangePurpose) {
-        e.target.changePurpose.className += " is-invalid";
-        e.target.changePurpose.classList.remove("is-valid");
-      } else {
-        e.target.changePurpose.classList.remove("is-invalid");
-        e.target.changePurpose.className += " is-valid";
-      }
-    }
-
-    if (!validateTarget) {
-      e.target.proposalTarget.className += " is-invalid";
-      e.target.proposalTarget.classList.remove("is-valid");
-    } else {
-      e.target.proposalTarget.classList.remove("is-invalid");
-      e.target.proposalTarget.className += " is-valid";
-    }
-
-    if (!nearAccountValid) {
-      e.target.proposalTarget.className += " is-invalid";
-      e.target.proposalTarget.classList.remove("is-valid");
-      setProposalTarget({value: proposalTarget.value, valid: false, message: 'user account does not exist!'});
-    } else {
-      setProposalTarget({value: proposalTarget.value, valid: true, message: ''});
-      e.target.proposalTarget.classList.remove("is-invalid");
-      e.target.proposalTarget.className += " is-valid";
-    }
+    let validateProposalMemberRole = validateField("proposalMemberRole", proposalMemberRole.value);
+    let validateProposalMemberId = validateField("proposalMemberId", proposalMemberId.value);
 
     if (!validateDescription) {
       e.target.proposalDescription.className += " is-invalid";
@@ -218,129 +183,52 @@ const Dao = () => {
       e.target.proposalDescription.className += " is-valid";
     }
 
-    if (!validateDiscussion) {
-      e.target.proposalDiscussion.className += " is-invalid";
-      e.target.proposalDiscussion.classList.remove("is-valid");
-    } else {
-      e.target.proposalDiscussion.classList.remove("is-invalid");
-      e.target.proposalDiscussion.className += " is-valid";
-    }
-
-    if (showPayout) {
-      if (!validateAmount) {
-        e.target.proposalAmount.className += " is-invalid";
-        e.target.proposalAmount.classList.remove("is-valid");
-      } else {
-        e.target.proposalAmount.classList.remove("is-invalid");
-        e.target.proposalAmount.className += " is-valid";
-      }
-    }
-
-    const parseForum = parseForumUrl(e.target.proposalDiscussion.value);
-
-    if (showPayout) {
-      if (e.target.proposalKind.value !== 'false' && nearAccountValid && validateTarget && validateDescription && validateAmount && validateDiscussion) {
-        try {
-          setShowSpinner(true);
-          const amount = new Decimal(e.target.proposalAmount.value);
-          const amountYokto = amount.mul(yoktoNear).toFixed();
-
-          await window.contract.add_proposal({
-              proposal: {
-                target: e.target.proposalTarget.value,
-                description: (e.target.proposalDescription.value + " " + parseForum).trim(),
-                kind: {
-                  type: e.target.proposalKind.value,
-                  amount: amountYokto,
-                }
-              },
-            },
-            new Decimal("30000000000000").toString(), bond.toString(),
-          )
-
-        } catch (e) {
-          console.log(e);
-          setShowError(e);
-        } finally {
-          setShowSpinner(false);
-        }
-      }
-    }
-
-    if (showCouncilChange) {
-      if (validateTarget && nearAccountValid && validateDescription) {
-        try {
-          setShowSpinner(true);
-          await window.contract.add_proposal({
-              proposal: {
-                target: e.target.proposalTarget.value,
-                description: (e.target.proposalDescription.value + " " + parseForum).trim(),
-                kind: {
-                  type: e.target.proposalKind.value,
-                }
-              },
-            },
-            new Decimal("30000000000000").toString(), bond.toString(),
-          )
-        } catch (e) {
-          console.log(e);
-          setShowError(e);
-        } finally {
-          setShowSpinner(false);
-        }
-      }
-    }
-    if (showChangePurpose) {
-      if (validateTarget && nearAccountValid && validateDescription && changePurpose) {
-        try {
-          setShowSpinner(true);
-          await window.contract.add_proposal({
-              proposal: {
-                target: e.target.proposalTarget.value,
-                description: (e.target.proposalDescription.value + " " + parseForum).trim(),
-                kind: {
-                  type: 'ChangePurpose',
-                  purpose: e.target.changePurpose.value,
-                }
-              },
-            },
-            new Decimal("30000000000000").toString(), bond.toString(),
-          )
-        } catch (e) {
-          console.log(e);
-          setShowError(e);
-        } finally {
-          setShowSpinner(false);
-        }
-      }
-    }
-
-    const gas = new Decimal("150000000000000");
+    // 30 TGas
+    const gas = new Decimal("30000000000000");
+    const a = new Decimal(1);
     const amountYokto = a.mul(yoktoNear).toFixed();
     
-    if (showVotePeriod) {
-      if (validateTarget && nearAccountValid && validateDescription) {
-        const votePeriod = new Decimal(e.target.votePeriod.value).mul('3.6e12');
+    if (showAddMemberToRole) {
+      if (!validateProposalMemberRole) {
+        e.target.proposalMemberRole.className += " is-invalid";
+        e.target.proposalMemberRole.classList.remove("is-valid");
+      } else {
+        e.target.proposalMemberRole.classList.remove("is-invalid");
+        e.target.proposalMemberRole.className += " is-valid";
+      }
+      if (!validateProposalMemberId) {
+        e.target.proposalMemberId.className += " is-invalid";
+        e.target.proposalMemberId.classList.remove("is-valid");
+      } else {
+        e.target.proposalMemberId.classList.remove("is-invalid");
+        e.target.proposalMemberId.className += " is-valid";
+      }      
+    }
+
+    if (showAddMemberToRole && !!nearAccountValid && 
+        validateDescription && validateProposalMemberRole && validateProposalMemberId) {
         try {
+          console.log("showAddMemberToRole...")
           setShowSpinner(true);
-          await window.contract.add_proposal({
+          /*await window.contract.add_proposal({
               proposal: {
-                description: (e.target.proposalDescription.value + " " + parseForum).trim(),
+                description: (e.target.proposalDescription.value).trim(),
                 kind: {
-                  type: 'ChangeVotePeriod',
-                  vote_period: votePeriod,
+                  AddMemberToRole: {
+                    member_id: e.target.proposalMemberId,
+                    role: e.target.proposalMemberRole
+                  },
                 }
               },
             },
-            gas.toString(), amountYokto.toString(),
-          )
+            gas.toString(), amountYokto.toString()
+          )*/
         } catch (e) {
           console.log(e);
           setShowError(e);
         } finally {
           setShowSpinner(false);
         }
-      }
     }
   }
 
@@ -554,19 +442,6 @@ const Dao = () => {
       return false;
     }
   }
-
-
-  const validateProposalDiscussion = (field, name, showMessage) => {
-    let categories = parseForumUrl(name);
-    /* Hardcoded exclusion of rucommunity.sputnikdao.near from field validation */
-    if (categories === name && stateCtx.config.contract !== 'rucommunity.sputnikdao.near') {
-      showMessage("Wrong link format", 'warning', field);
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   const validateNumber = (field, name, showMessage) => {
     if (name && !isNaN(name) && name.length > 0) {
       return true;
@@ -578,17 +453,11 @@ const Dao = () => {
 
   const validateField = (field, value) => {
     switch (field) {
-      case "proposalKind":
-        return value !== 'false';
-      case "proposalTarget":
-      case "changePurpose":
-        return validateString(field, value, showMessage.bind(this));
       case "proposalDescription":
-        return validateLongString(field, value, showMessage.bind(this));
-      case "proposalDiscussion":
-        return validateProposalDiscussion(field, value, showMessage.bind(this));
-      case "proposalAmount":
-      case "votePeriod":
+      case "proposalMemberRole":
+      case "proposalMemberId":
+        return validateString(field, value, showMessage.bind(this));
+      case "amount":
         return validateNumber(field, value, showMessage.bind(this));
     }
   };
@@ -609,57 +478,18 @@ Roles Kinds:
     BountyDone 
     Vote
 */    
-    if (event.target.value === "NewCouncil" || event.target.value === "RemoveCouncil") {
-      setShowCouncilChange(true)
-      setShowPayout(false)
-      setShowChangePurpose(false)
-      setShowVotePeriod(false)
-      setDisableTarget(false)
-      setProposalTarget({value: '', valid: true, message: ''});
+    console.log(event.target.value);
+    if (event.target.value === "AddMemberToRole") {
+      setShowAddMemberToRole(true);
+      setShowChangeConfig(false);
     }
-
-    if (event.target.value === "ChangeVotePeriod") {
-      setShowVotePeriod(true)
-      setShowPayout(false)
-      setShowChangePurpose(false)
-      setShowCouncilChange(false)
-      setProposalTarget({value: window.walletConnection.getAccountId(), valid: true, message: ''});
-      setDisableTarget(true)
+    if (event.target.value === "ChangeConfig") {
+      setShowAddMemberToRole(false);
+      setShowChangeConfig(true);
     }
-
-    if (event.target.value === "ChangePurpose") {
-      setShowChangePurpose(true)
-      setShowPayout(false)
-      setShowVotePeriod(false)
-      setShowCouncilChange(false)
-      setProposalTarget({value: window.walletConnection.getAccountId(), valid: true, message: ''});
-      setDisableTarget(true)
-    }
-
-    if (event.target.value === "Payout") {
-      setShowPayout(true)
-      setShowChangePurpose(false)
-      setShowVotePeriod(false)
-      setShowCouncilChange(false)
-      setDisableTarget(false)
-      setProposalTarget({value: '', valid: true, message: ''});
-    }
-
-
-    if (event.target.name === "proposalKind") {
-      setProposalKind({value: event.target.value, valid: !!event.target.value});
-    }
-
   };
 
   const changeHandler = (event) => {
-    if (event.target.name === "proposalTarget") {
-      setProposalTarget({
-        value: event.target.value.toLowerCase(),
-        valid: !!event.target.value,
-        message: proposalTarget.message
-      });
-    }
     if (event.target.name === "proposalDescription") {
       setProposalDescription({
         value: event.target.value,
@@ -667,50 +497,26 @@ Roles Kinds:
         message: proposalDescription.message
       });
     }
-    if (event.target.name === "proposalDiscussion") {
-      setProposalDiscussion({
-        value: event.target.value,
-        valid: !!event.target.value,
-        message: proposalDiscussion.message
+    if (event.target.name === "proposalMemberRole") {
+      setProposalMemberRole({
+        value: event.target.value, 
+        valid: !!event.target.value, 
+        message: proposalMemberRole.message
       });
     }
-    if (event.target.name === "proposalAmount") {
-      setProposalAmount({value: event.target.value, valid: !!event.target.value, message: proposalAmount.message});
-    }
-    if (event.target.name === "votePeriod") {
-      setVotePeriod({value: event.target.value, valid: !!event.target.value, message: votePeriod.message});
-    }
-    if (event.target.name === "changePurpose") {
-      setChangePurpose({value: event.target.value, valid: !!event.target.value, message: changePurpose.message});
-    }
-
-    if (!validateField(event.target.name, event.target.value)) {
-      event.target.className = "form-control is-invalid";
-    } else {
-      event.target.className = "form-control is-valid";
+    if (event.target.name === "proposalMemberId") {
+      setProposalMemberId({
+        value: event.target.value, 
+        valid: !!event.target.value, 
+        message: proposalMemberId.message
+      });
     }
   };
 
   const showMessage = (message, type, field) => {
     message = message.trim();
     if (message) {
-      switch (field) {
-        case "proposalKind":
-          setProposalKind(prevState => ({...prevState, message: message}));
-          break;
-        case "proposalTarget":
-          setProposalTarget(prevState => ({...prevState, message: message}));
-          break;
-        case "proposalDescription":
-          setProposalDescription(prevState => ({...prevState, message: message}));
-          break;
-        case "proposalDiscussion":
-          setProposalDiscussion(prevState => ({...prevState, message: message}));
-          break;
-        case "proposalAmount":
-          setProposalAmount(prevState => ({...prevState, message: message}));
-          break;
-      }
+        
     }
   };
 
@@ -1055,55 +861,28 @@ Roles Kinds:
                       <option value="Vote">Vote</option>
                     </select>
                   </div>
-                  <MDBInput disabled={disableTarget} name="proposalTarget" value={proposalTarget.value}
-                            onChange={changeHandler} label="Target"
-                            required group>
-                    <div className="invalid-feedback">
-                      {proposalTarget.message}
-                    </div>
-                  </MDBInput>
                   <MDBInput name="proposalDescription" value={proposalDescription.value} onChange={changeHandler}
-                            required label="Job/proposal description (max 240 chars)" group>
+                            required label="Proposal description (max 240 chars)" group>
                     <div className="invalid-feedback">
                       {proposalDescription.message}
                     </div>
                   </MDBInput>
-                  <MDBInput name="proposalDiscussion" value={proposalDiscussion.value} onChange={changeHandler}
-                            required label="Please copy and paste the forum link here" group>
-                    <div className="invalid-feedback">
-                      {proposalDiscussion.message}
-                    </div>
-                  </MDBInput>
-                  <MDBBox className="text-muted font-small">create a discussion (before submitting a proposal) here: <a
-                    href="https://gov.near.org/c/10"
-                    target="_blank">https://gov.near.org/c/10</a> and use above 👆</MDBBox>
-                  {showPayout ?
-                    <MDBInput value={proposalAmount.value} name="proposalAmount" onChange={changeHandler} required
-                              label="Payout in NEAR" group>
-                      <div className="invalid-feedback">
-                        {proposalAmount.message}
-                      </div>
-                    </MDBInput>
+                  {showAddMemberToRole ?
+                      <>
+                      <MDBInput value={proposalMemberId.value} name="proposalMemberId" onChange={changeHandler} required
+                                label="Member ID" group>
+                        <div className="invalid-feedback">
+                          {proposalMemberId.message}
+                        </div>
+                      </MDBInput>
+                      <MDBInput value={proposalMemberRole.value} name="proposalMemberRole" onChange={changeHandler} required
+                                label="Member role" group>
+                        <div className="invalid-feedback">
+                          {proposalMemberRole.message}
+                        </div>
+                      </MDBInput>
+                      </>
                     : null}
-                  {showVotePeriod ?
-                    <MDBInput value={votePeriod.value} name="votePeriod" onChange={changeHandler} required
-                              label="New Vote Period (in hours)" group>
-                      <div className="invalid-feedback">
-                        {votePeriod.message}
-                      </div>
-                    </MDBInput>
-                    : null}
-                  {showChangePurpose ?
-                    <MDBInput value={changePurpose.value} name="changePurpose" onChange={changeHandler} required
-                              label="Enter New Purpose" group>
-                      <div className="invalid-feedback">
-                        {changePurpose.message}
-                      </div>
-                    </MDBInput>
-                    : null}
-                  <MDBInput
-                    value={bond ? "Bond: " + (new Decimal(bond.toString()).div(yoktoNear).toFixed(2)) + " NEAR (amount to pay now)" : null}
-                    name="bondAmount" disabled group/>
                 </MDBModalBody>
                 <MDBModalFooter className="justify-content-center">
                   <MDBBtn color="unique" type="submit">
@@ -1126,7 +905,6 @@ Roles Kinds:
       </MDBContainer>
       <Footer/>
     </MDBView>
-
   )
 }
 
