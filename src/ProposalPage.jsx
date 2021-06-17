@@ -296,7 +296,6 @@ const ProposalPage = () => {
   let {dao, proposal} = useParams();
   const [showError, setShowError] = useState(null);
 
-
   useEffect(
     () => {
       window.contract = new Contract(window.walletConnection.account(), dao, {
@@ -310,7 +309,7 @@ const ProposalPage = () => {
   useEffect(
     () => {
       window.contract.get_policy()
-        .then(r => {
+        .then(data => {
           var roles = [];
           data.roles.map((item, _) => {
             if (item.name === 'council') {
@@ -325,7 +324,6 @@ const ProposalPage = () => {
     },
     [dao]
   )
-
 
   useEffect(
     () => {
@@ -343,8 +341,6 @@ const ProposalPage = () => {
     },
     [dao, proposal]
   )
-
-  console.log(proposals)
 
   return (
     <MDBView className="w-100 h-100" style={{minHeight: "100vh"}}>
