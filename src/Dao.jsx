@@ -220,7 +220,7 @@ const Dao = () => {
     let validateProposalTransferToken = validateField("proposalTransferToken", proposalTransferToken.value);
     let validateProposalTransferReceiver = validateField("proposalTransferReceiver", proposalTransferReceiver.value);
     let validateProposalTransferAmount = validateNumber("proposalTransferAmount", proposalTransferAmount.value);
-    let validateProposalTransferMessage = validateField("proposalChangeConfigMetadata", proposalTransferMessage.value);    
+    let validateProposalTransferMessage = validateField("proposalChangeConfigMetadata", proposalTransferMessage.value);
 
     if (!validateDescription) {
       e.target.proposalDescription.className += " is-invalid";
@@ -248,32 +248,32 @@ const Dao = () => {
       } else {
         e.target.proposalMemberId.classList.remove("is-invalid");
         e.target.proposalMemberId.className += " is-valid";
-      }      
+      }
     }
 
-    if (showAddMemberToRole && !!nearAccountValid && 
+    if (showAddMemberToRole && !!nearAccountValid &&
         validateDescription && validateProposalMemberRole && validateProposalMemberId) {
-        try {
-          console.log("AddMemberToRole...")
-          setShowSpinner(true);
-          let args = {
-            "proposal": {
-              "description": proposalDescription.value.trim(),
-              "kind": {
-                "AddMemberToRole": {
-                  "member_id": proposalMemberId.value,
-                  "role": proposalMemberRole.value,
-                },
+      try {
+        console.log("AddMemberToRole...")
+        setShowSpinner(true);
+        let args = {
+          "proposal": {
+            "description": proposalDescription.value.trim(),
+            "kind": {
+              "AddMemberToRole": {
+                "member_id": proposalMemberId.value,
+                "role": proposalMemberRole.value,
               },
-            }
-          };
-          await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
-        } catch (e) {
-          console.log(e);
-          setShowError(e);
-        } finally {
-          setShowSpinner(false);
-        }
+            },
+          }
+        };
+        await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
+      } catch (e) {
+        console.log(e);
+        setShowError(e);
+      } finally {
+        setShowSpinner(false);
+      }
     }
 
     if (showChangeConfig && !!nearAccountValid && validateDescription &&
@@ -326,14 +326,37 @@ const Dao = () => {
         setShowError(e);
       } finally {
         setShowSpinner(false);
-      }      
+      }
     }
 
     if (showTransfer && !!nearAccountValid &&
         validateDescription && validateProposalTransferToken && validateProposalTransferReceiver && validateProposalTransferAmount && validateProposalTransferMessage) {
-
+      try {
+        console.log("Transfer...")
+        setShowSpinner(true);
+        let args = {
+          "proposal": {
+            "description": proposalDescription.value.trim(),
+            "kind": {
+              "Transfer": {
+                "token_id": proposalTransferToken.value,
+                "receiver_id": proposalTransferReceiver.value,
+                "amount": new Decimal(proposalTransferAmount.value),
+                "msg": proposalTransferMessage.value,
+              },
+            },
+          }
+        };
+        await window.contract.add_proposal(args, gas.toString(), amountYokto.toString());
+      } catch (e) {
+        console.log(e);
+        setShowError(e);
+      } finally {
+        setShowSpinner(false);
+      }
     }
-        
+
+  }        
 
   const [firstRun, setFirstRun] = useState(true);
 
@@ -1040,14 +1063,8 @@ Roles Kinds:
                       {/*<option value="false">Choose proposal type</option>*/}
                       <option value="AddMemberToRole">Add Member To Role</option>
                       <option value="ChangeConfig">Change Config</option>
-                      <option value="ChangePolicy">Change Policy</option>
                       <option value="RemoveMemberFromRole">Remove Member From Role</option>
-                      <option value="FunctionCall">Function Call</option>
-                      <option value="UpgradeSelf">Upgrade Self</option>
-                      <option value="UpgradeRemote">Upgrade Remote</option>
                       <option value="Transfer">Transfer</option>
-                      <option value="SetStakingContract">Set Staking Contract</option>
-                      <option value="Vote">Vote</option>
                     </select>
                   </div>
                   <MDBInput name="proposalDescription" value={proposalDescription.value} onChange={changeHandler}
