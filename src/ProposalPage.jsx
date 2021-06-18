@@ -28,9 +28,9 @@ export const Proposal = (props) => {
   const vote = async (vote) => {
     try {
       setShowSpinner(true);
-      await window.contract.vote({
-        id: props.id,
-        vote: vote,
+      await window.contract.act_proposal({
+        "id": props.id,
+        "action": vote,
       })
     } catch (e) {
       console.log(e);
@@ -56,7 +56,7 @@ export const Proposal = (props) => {
 
   const handleVoteYes = () => {
     if (props.data.votes[window.walletConnection.getAccountId()] === undefined) {
-      vote('Yes').then().catch((e) => {
+      vote('VoteApprove').then().catch((e) => {
         console.log(e);
       });
     } else {
@@ -66,7 +66,7 @@ export const Proposal = (props) => {
 
   const handleVoteNo = () => {
     if (props.data.votes[window.walletConnection.getAccountId()] === undefined) {
-      vote('No').then().catch((e) => {
+      vote('VoteReject').then().catch((e) => {
         console.log(e);
       });
     } else {
