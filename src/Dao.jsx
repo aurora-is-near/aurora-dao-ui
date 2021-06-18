@@ -232,7 +232,8 @@ const Dao = () => {
 
     // 30 TGas
     const gas = new Decimal("30000000000000");
-    const amountYokto = new Decimal("1");
+    let a = new Decimal("1");
+    const amountYokto = a.mul(yoktoNear).toFixed();
 
     if (showAddMemberToRole) {
       if (!validateProposalMemberRole) {
